@@ -1,0 +1,34 @@
+{
+  "type": 3,
+  "content": {
+    "version": "KqlItem/1.0",
+    "query": "let GeoIPDB_FULL = _GetWatchlist(\"geoip\");\nlet IpAddress_REGEX_PATTERN = @\"\\b\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\b\";\n// EventID 18456 = Login failed for user \"username\"\nEvent\n| where EventID == 18456\n| where TimeGenerated  between (datetime(2025-01-15T14:00:00) ..datetime(2025-01-16T05:00:00))\n| evaluate ipv4_lookup(GeoIPDB_FULL,extract(IpAddress_REGEX_PATTERN, 0, RenderedDescription), network)\n| project TimeGenerated, AttackerIP = extract(IpAddress_REGEX_PATTERN, 0, RenderedDescription), DestinationHostName = Computer, RenderedDescription, latitude, longitude, city = cityname, country = countryname, loc = strcat(cityname, \" (\", countryname, \")\");",
+    "size": 3,
+    "timeContext": {
+      "durationMs": 54000000,
+      "endTime": "2025-01-16T04:00:00.000Z"
+    },
+    "queryType": 0,
+    "resourceType": "microsoft.operationalinsights/workspaces",
+    "visualization": "map",
+    "mapSettings": {
+      "locInfo": "LatLong",
+      "locInfoColumn": "countryname",
+      "latitude": "latitude",
+      "longitude": "longitude",
+      "sizeSettings": "latitude",
+      "sizeAggregation": "Count",
+      "opacity": 0.8,
+      "labelSettings": "TimeGenerated",
+      "legendMetric": "TimeGenerated",
+      "legendAggregation": "Count",
+      "itemColorSettings": {
+        "nodeColorField": "latitude",
+        "colorAggregation": "Sum",
+        "type": "heatmap",
+        "heatmapPalette": "coldHot"
+      }
+    }
+  },
+  "name": "query - 0"
+}

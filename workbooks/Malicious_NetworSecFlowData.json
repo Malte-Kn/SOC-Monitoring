@@ -1,0 +1,28 @@
+{
+  "type": 3,
+  "content": {
+    "version": "KqlItem/1.0",
+    "query": "let GeoIPDB_FULL = _GetWatchlist(\"geoip\");\r\nAzureNetworkAnalytics_CL \r\n| where FlowType_s == \"MaliciousFlow\"\r\n| where TimeGenerated  between (datetime(2025-01-15T14:00:00) ..datetime(2025-01-16T05:00:00))\r\n| evaluate ipv4_lookup(GeoIPDB_FULL, SrcIP_s, network)\r\n| project TimeGenerated, FlowType = FlowType_s, IpAddress = SrcIP_s, DestinationIpAddress = DestIP_s, DestinationPort = DestPort_d, Protocol = L7Protocol_s, NSGRuleMatched = NSGRules_s,latitude, longitude, city = cityname, country = countryname, loc = strcat(cityname, \" (\", countryname, \")\");\r\n\r\n",
+    "size": 2,
+    "queryType": 0,
+    "resourceType": "microsoft.operationalinsights/workspaces",
+    "visualization": "map",
+    "mapSettings": {
+      "locInfo": "LatLong",
+      "latitude": "latitude",
+      "longitude": "longitude",
+      "sizeSettings": "city",
+      "sizeAggregation": "Count",
+      "labelSettings": "loc",
+      "legendMetric": "IpAddress",
+      "legendAggregation": "Count",
+      "itemColorSettings": {
+        "nodeColorField": "city",
+        "colorAggregation": "Count",
+        "type": "heatmap",
+        "heatmapPalette": "coldHot"
+      }
+    }
+  },
+  "name": "query - 0"
+}
